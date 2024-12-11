@@ -1,0 +1,42 @@
+name: Nexus CLI Setup
+
+on:
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  setup-nexus:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Update System
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install -y build-essential pkg-config libssl-dev git-all
+
+      - name: Install Rust
+        run: |
+          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+          echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+          . "$HOME/.cargo/env"
+
+      - name: Install Compiler
+        run: |
+          sudo apt install -y protobuf-compiler
+
+      - name: Install Nexus CLI
+        run: |
+          curl https://cli.nexus.xyz/ | sh
+
+      - name: Configure Prover ID
+        env:
+          PROVER_ID: "X9lBFXZD2eTO9owqGXbLAEOgNZg1" # Replace with your actual Prover ID
+        run: |
+          echo "$PROVER_ID" > ~/.nexus/prover-id
+
+      - name: Run Nexus CLI
+        run: |
+          curl https://cli.nexus.xyz/ | sh
+          
+git add .github/workflows/nexus-setup.yml
+git commit -m "Add Nexus CLI setup workflow"
+git push
